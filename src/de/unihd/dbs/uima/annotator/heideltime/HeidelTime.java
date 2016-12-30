@@ -2119,13 +2119,13 @@ public class HeidelTime extends JCasAnnotator_ImplBase {
 			for (Matcher m = e.getKey().matcher(coveredText); m.find();) {
 				// improved token boundary checking
 				// FIXME: these seem to be flawed 
-				// boolean infrontBehindOK = ContextAnalyzer.checkTokenBoundaries(m, s, jcas) && ContextAnalyzer.checkInfrontBehind(m, s);
+				boolean infrontBehindOK = ContextAnalyzer.checkTokenBoundaries(m, s, jcas) && ContextAnalyzer.checkInfrontBehind(m, s);
 
 				// CHECK POS CONSTRAINTS
 				String constraint = constraints.get(key);
 				boolean posConstraintOK = (constraint == null) || checkPosConstraint(s, constraint, m, jcas);
 
-				if (/* infrontBehindOK && */ posConstraintOK) {
+				if (infrontBehindOK && posConstraintOK) {
 					// Offset of timex expression (in the checked sentence)
 					int timexStart = m.start(), timexEnd = m.end();
 
