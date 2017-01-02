@@ -244,7 +244,7 @@ RULENAME="date_r11c",EXTRACTION="(?:[Tt]he )?%rePartOfYear of %reThisNextLast ye
 RULENAME="date_r12a",EXTRACTION="(?:the year )?%reYear4Digit",NORM_VALUE="group(1)"
 //RULENAME="date_r12b",EXTRACTION="%reYear4Digit(?:-|–| and )%reYear2Digit",NORM_VALUE="%SUBSTRING%(group(1),0,2)group(2)",OFFSET="group(2)-group(2)"
 RULENAME="date_r12b",EXTRACTION="%reYear4Digit%reAndOrTo%reYear2Digit",NORM_VALUE="%SUBSTRING%(group(1),0,2)group(3)",OFFSET="group(3)-group(3)"
-RULENAME="date_r12c",EXTRACTION="%reNumWordTeen[ -]%reNumWord2D",NORM_VALUE="%normDurationNumber(group(1))%normDurationNumber(group(3))"
+RULENAME="date_r12c",EXTRACTION="%reNumWordTeen[ -]%reNumWord2D",NORM_VALUE="%normDurationNumber(group(1))%normDurationNumber(group(2))"
 RULENAME="date_r12d",EXTRACTION="two[ -]thousand(?: and)? %reNumWord12D",NORM_VALUE="20%normDurationNumber(group(1))"
 RULENAME="date_r12e",EXTRACTION="[Tt]he year two[ -]thousand",NORM_VALUE="2000"
 
