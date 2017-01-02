@@ -117,7 +117,7 @@ public class HeidelTime extends JCasAnnotator_ImplBase {
 	private boolean deleteOverlapping = true;
 
 	// To profile regular expression matching.
-	private static final boolean PROFILE_REGEXP = true;
+	private static final boolean PROFILE_REGEXP = false;
 
 	private HashMap<String, Long> profileData = PROFILE_REGEXP ? new HashMap<String, Long>() : null;
 
@@ -2100,7 +2100,7 @@ public class HeidelTime extends JCasAnnotator_ImplBase {
 			// validate fast check first, if no fast match, everything else is
 			// not required anymore
 			Pattern f = fastCheck.get(key);
-			if (f != null && f.matcher(coveredText).find())
+			if (f != null && !f.matcher(coveredText).find())
 				continue;
 
 			Matcher m = e.getKey().matcher(coveredText);
