@@ -1,11 +1,15 @@
 package de.unihd.dbs.uima.annotator.heideltime.utilities;
 
+import java.text.ParsePosition;
 import java.time.LocalDate;
-import java.time.chrono.Era;
-import java.time.chrono.IsoEra;
+import java.time.Year;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 import java.time.temporal.WeekFields;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,23 +29,27 @@ public class DateCalculator {
 	private static final Logger LOG = LoggerFactory.getLogger(DateCalculator.class);
 
 	// two formatters depending if BC or not
-	static final DateTimeFormatter YEARFORMATTER = DateTimeFormatter.ofPattern("yyyy");
-	static final DateTimeFormatter YEARFORMATTERBC = DateTimeFormatter.ofPattern("GGyyyy");
+	static final DateTimeFormatter YEARFORMATTER = DateTimeFormatter.ofPattern("yyyy", Locale.ROOT);
+	static final DateTimeFormatter YEARFORMATTERBC = DateTimeFormatter.ofPattern("GGyyyy", Locale.ROOT);
 
-	static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ROOT);
 
-	static final DateTimeFormatter WEEKFORMATTER = DateTimeFormatter.ofPattern("yyyy-w");
+	static final DateTimeFormatter MONTHFORMATTER = DateTimeFormatter.ofPattern("yyyy-MM", Locale.ROOT);
 
-	private static LocalDate parseBC(String date) throws DateTimeParseException {
+	static final DateTimeFormatter WEEKFORMATTER = new DateTimeFormatterBuilder().appendPattern("YYYY-['W']w").parseDefaulting(WeekFields.ISO.dayOfWeek(), 1).toFormatter(Locale.ROOT);
+
+	private static Year parseBC(String date) throws DateTimeParseException {
 		if (date.length() == 0)
 			throw new DateTimeParseException("Empty date string.", date, 0);
-		return LocalDate.parse(date, Character.isDigit(date.charAt(0)) ? YEARFORMATTER : YEARFORMATTERBC);
+		return Year.from(((Character.isDigit(date.charAt(0)) ? YEARFORMATTER : YEARFORMATTERBC)//
+				.parse(date, new ParsePosition(0))));
 	}
 
 	public static String getXNextYear(String date, int x) {
 		try {
-			LocalDate d = parseBC(date).plusYears(x);
-			return d.format((d.getEra() == IsoEra.CE) ? YEARFORMATTER : YEARFORMATTERBC);
+			Year d = parseBC(date).plusYears(x);
+			d.get(ChronoField.ERA);
+			return d.format((d.get(ChronoField.ERA) == 1) ? YEARFORMATTER : YEARFORMATTERBC);
 		} catch (DateTimeParseException e) {
 			LOG.error(e.getMessage(), e);
 			return "";
@@ -51,8 +59,8 @@ public class DateCalculator {
 	public static String getXNextDecade(String date, int x) {
 		date = date + "0"; // deal with years not with centuries
 		try {
-			LocalDate d = parseBC(date).plusYears(10 * x);
-			return d.format((d.getEra() == IsoEra.CE) ? YEARFORMATTER : YEARFORMATTERBC);
+			Year d = parseBC(date).plusYears(10 * x);
+			return d.format((d.get(ChronoField.ERA) == 1) ? YEARFORMATTER : YEARFORMATTERBC);
 		} catch (DateTimeParseException e) {
 			LOG.error(e.getMessage(), e);
 			return "";
@@ -63,20 +71,20 @@ public class DateCalculator {
 		date = date + "00"; // deal with years not with centuries
 
 		try {
-			LocalDate d = parseBC(date);
-			Era oldEra = d.getEra();
+			Year d = parseBC(date);
+			int oldEra = d.get(ChronoField.ERA);
 			d = d.plusYears(x * 100);
 
 			// check if new date is BC or AD for choosing formatter or formatterBC
-			Era newEra = d.getEra();
-			if (newEra == IsoEra.CE) {
-				if (oldEra == IsoEra.BCE) {
+			int newEra = d.get(ChronoField.ERA);
+			if (newEra == 1) {
+				if (oldEra == 0) {
 					// -100 if from BC to AD
 					d = d.minusYears(100); // FIXME: Why?
 				}
 				return d.format(YEARFORMATTER).substring(0, 2);
 			} else {
-				if (oldEra == IsoEra.CE) {
+				if (oldEra == 1) {
 					// +100 if from AD to BC
 					d = d.plusYears(100); // FIXME: Why?
 				}
@@ -118,11 +126,8 @@ public class DateCalculator {
 	 */
 	public static String getXNextMonth(String date, int x) {
 		try {
-			LocalDate d = parseBC(date).plusMonths(x);
-			
-			// FIXME: this is only year precision?
-			// check if new date is BC or AD for choosing formatter or formatterBC
-			return d.format((d.getEra() == IsoEra.CE) ? YEARFORMATTER : YEARFORMATTERBC);
+			YearMonth d = MONTHFORMATTER.parse(date, YearMonth::from).plusMonths(x);
+			return d.format(MONTHFORMATTER);
 
 		} catch (DateTimeParseException e) {
 			LOG.error(e.getMessage(), e);
@@ -141,9 +146,8 @@ public class DateCalculator {
 	 */
 	public static String getXNextWeek(String date, int x, Language language) {
 		NormalizationManager nm = NormalizationManager.getInstance(language, false);
-		String date_no_W = date.replace("W", "");
 		try {
-			LocalDate d = LocalDate.parse(date_no_W, WEEKFORMATTER).plusWeeks(x);
+			LocalDate d = LocalDate.parse(date, WEEKFORMATTER).plusWeeks(x);
 			String newDate = d.format(WEEKFORMATTER);
 			// TODO: use cheaper normalization?
 			return newDate.substring(0, 4) + "-W" + nm.getFromNormNumber(newDate.substring(5));
@@ -170,7 +174,7 @@ public class DateCalculator {
 			return 0;
 		}
 	}
-	
+
 	/**
 	 * Get the week of date
 	 * 
