@@ -644,16 +644,18 @@ public class ContextAnalyzer {
 	 */
 	public static boolean checkTokenBoundaries(MatchResult r, Sentence s, JCas jcas) {
 		// whole expression is marked as a sentence
-		if ((r.end() - r.start()) == (s.getEnd() - s.getBegin()))
+		final int offset = s.getBegin();
+		if (r.end() - r.start() == s.getEnd() - offset)
 			return true;
 
 		// Only check Token boundaries if no white-spaces in front of and behind the match-result
 		String cov = s.getCoveredText();
-		if ((r.start() == 0 || cov.charAt(r.start() - 1) == ' ') && (r.end() == cov.length() || cov.charAt(r.end()) == ' '))
+		boolean beginOK = r.start() == 0 || r.start() == s.getBegin() //
+				|| (r.start() < cov.length() && cov.charAt(r.start() - 1) == ' ');
+		boolean endOK = r.end() == cov.length() || r.end() == s.getEnd() //
+				|| (r.end() < cov.length() && cov.charAt(r.end()) == ' ');
+		if (beginOK && endOK)
 			return true;
-
-		boolean beginOK = false;
-		boolean endOK = false;
 
 		// other token boundaries than white-spaces
 		AnnotationIndex<Token> tokens = jcas.getAnnotationIndex(Token.type);
@@ -661,7 +663,7 @@ public class ContextAnalyzer {
 			Token t = iterToken.next();
 
 			// Check begin
-			if (r.start() + s.getBegin() == t.getBegin()) {
+			if (r.start() + offset == t.getBegin()) {
 				beginOK = true;
 			}
 			// Tokenizer does not split number from some symbols (".", "/", "-", "–"),
@@ -673,7 +675,7 @@ public class ContextAnalyzer {
 			}
 
 			// Check end
-			if (r.end() + s.getBegin() == t.getEnd()) {
+			if (r.end() + offset == t.getEnd()) {
 				endOK = true;
 			}
 			// Tokenizer does not split number from some symbols (".", "/", "-", "–"),
