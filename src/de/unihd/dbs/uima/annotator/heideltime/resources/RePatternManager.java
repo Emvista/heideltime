@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
@@ -90,7 +89,7 @@ public class RePatternManager extends GenericResourceManager {
 		for (String resource : hmResourcesRePattern.keySet()) {
 			// read pattern resources with "Temponym" only if temponym tagging is selected
 			if (!load_temponym_resources && resource.contains("Temponym")) {
-				LOG.debug("No Temponym Tagging selected. Skipping pattern resource: {}", resource);
+				LOG.trace("No Temponym tagging selected. Skipping pattern resource: {}", resource);
 				continue;
 			}
 			LOG.debug("Adding pattern resource: {}", resource);
@@ -128,7 +127,7 @@ public class RePatternManager extends GenericResourceManager {
 		// Since we already have some rules written as res,
 		// We try to expand some basic constructs first.
 		try {
-			HashSet<String> expanded = new HashSet<>(); // To remove duplicates
+			ArrayList<String> expanded = new ArrayList<>();
 			for (String s : inpatterns) {
 				try {
 					RegexpOptimizer.expandPatterns(s, x -> expanded.add(x.toString()));
@@ -138,7 +137,9 @@ public class RePatternManager extends GenericResourceManager {
 					return inpatterns;
 				}
 			}
-			return Arrays.asList(RegexpOptimizer.combinePatterns(expanded));
+			String pattern = RegexpOptimizer.combinePatterns(expanded);
+			LOG.debug("Combined {} into: {}", name, pattern);
+			return Arrays.asList(pattern);
 		} catch (OptimizerException e) {
 			LOG.warn("Pattern '{}' contains a too complex regexp construct, cannot optimize: {}", name, e.getMessage());
 			return inpatterns;

@@ -3,8 +3,8 @@ package de.unihd.dbs.uima.annotator.heideltime.utilities;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -292,14 +292,37 @@ public class RegexpOptimizer {
 
 	private static final Comparator<String> upperLowerChar = new Comparator<String>() {
 		public int compare(String o1, String o2) {
-			int l1 = o1.length(),l2=o2.length();int l=l1<l2?l1:l2;for(int i=0;i<l;i++){char c1=o1.charAt(i),c2=o2.charAt(i);if(c1!=c2){char d1=Character.toLowerCase(c1),d2=Character.toLowerCase(c2);return(d1==d2)?Character.compare(c1,c2):Character.compare(d1,d2);}}return l1<l2?-1:l1==l2?0:+1;}};
+			int l1 = o1.length(), l2 = o2.length();
+			int l = l1 < l2 ? l1 : l2;
+			for (int i = 0; i < l; i++) {
+				char c1 = o1.charAt(i), c2 = o2.charAt(i);
+				if (c1 != c2) {
+					char d1 = Character.toLowerCase(c1), d2 = Character.toLowerCase(c2);
+					return (d1 == d2) ? Character.compare(c1, c2) : Character.compare(d1, d2);
+				}
+			}
+			return l1 < l2 ? -1 : l1 == l2 ? 0 : +1;
+		}
+	};
 
 	public static String combinePatterns(Collection<String> patterns) throws OptimizerException {
 		String[] ps = patterns.toArray(new String[patterns.size()]);
 		Arrays.sort(ps, upperLowerChar);
-		// if (ps.length < 100) System.err.println(String.join("|", ps));
+		// Remove duplicates:
+		int l = 0;
+		String last = null;
+		for (int i = 0; i < ps.length; i++) {
+			String cand = ps[i];
+			if (cand.equals(last)) {
+				continue;
+			}
+			ps[l++] = cand;
+			last = cand;
+		}
+		if (l < ps.length)
+			LOG.trace("Removed {} duplicate strings.", ps.length - l);
 		ArrayList<String> toplevel = new ArrayList<>();
-		build(ps, 0, ps.length, 0, x -> toplevel.add(x.toString()));
+		build(ps, 0, l, 0, x -> toplevel.add(x.toString()));
 		StringBuilder buf = new StringBuilder();
 		buildGroup(toplevel.toArray(new String[toplevel.size()]), 0, toplevel.size(), 0, 0, x -> {
 			assert (buf.length() == 0);
@@ -310,6 +333,7 @@ public class RegexpOptimizer {
 
 	private static void build(String[] ps, int start, int end, int knownl, Consumer out) throws OptimizerException {
 		String k = ps[start];
+		// assert (k.length() > knownl) : "Duplicates not removed?";
 		// Only one string remaining:
 		if (start + 1 == end) {
 			if (knownl == k.length()) {
@@ -323,7 +347,7 @@ public class RegexpOptimizer {
 			out.accept(k.substring(knownl));
 			return;
 		}
-		int l = nextLength(k, knownl);
+		int l = knownl < k.length() ? nextLength(k, knownl) : knownl;
 		// System.err.println("Next length: " + l + " in " + k);
 		StringBuilder buf1 = new StringBuilder(), buf2 = new StringBuilder();
 		int begin = start, pos = start;
@@ -353,94 +377,111 @@ public class RegexpOptimizer {
 			out.accept(buf);
 			return;
 		}
+		// Two element "group":
+		if (begin + 2 == end) {
+			int p = prefixLength(ps, begin, end, subend);
+			String other = ps[begin + 1];
+			assert (!other.equals(key)) : "Duplicates not removed?";
+			buf.setLength(0);
+			buf.append(key, subbegin, p);
+			if (p == key.length()) {
+				if (p + 1 == other.length()) {
+					buf.append(other.charAt(p)).append('?');
+				} else {
+					buf.append("(?:").append(other, p, other.length()).append(")?");
+				}
+			} else {
+				buf.append("(?:").append(key, p, key.length()).append('|');
+				buf.append(other, p, other.length()).append(')');
+			}
+			LOG.trace("buildGroup two-element case: {}", buf);
+			out.accept(buf);
+			return;
+		}
+		// So we have at least three strings now.
+		// The basic pattern we build is: <prefix>(<midfix>(<alt1>|<alt2>)<?><postfix>)<?>
+		// This should probably be handled by clever recursion eventually...
+		// Challenges arise because of pattern optimizations, such as character groups.
 		// Skip a prefix if shared by all strings:
 		assert (subend <= key.length()) : key + " " + subbegin + "-" + subend;
 		// p is the first position where they differ.
-		int p = prefixLength(ps, begin, end, subend);
-		// Exact match:
-		boolean prefixOnly = false;
-		if (key.length() == p) {
-			// Only one more entry remaining.
-			if (begin + 2 == end) {
-				String other = ps[begin + 1];
-				int postlen = other.length() - p;
-				assert (postlen > 0);
-				buf.setLength(0);
-				if (postlen == 1) {
-					buf.append(other, subbegin, other.length()).append('?');
-				} else {
-					buf.append(other, subbegin, p);
-					buf.append("(?:");
-					buf.append(other, p, other.length());
-					buf.append(")?");
-				}
-				out.accept(buf);
-				return;
-			}
-			prefixOnly = true;
+		int prefixend = prefixLength(ps, begin, end, subend), midfixend = prefixend;
+		// Prefix alone is a valid pattern:
+		final boolean prefixOnly;
+		if (prefixOnly = (key.length() == prefixend)) {
 			++begin;
-			p = prefixLength(ps, begin, end, p);
+			// Find midfix:
+			midfixend = prefixLength(ps, begin, end, prefixend);
 			key = ps[begin];
 		}
+		// All remaining patterns will begin with midfix now.
+		// Expand all patterns, starting at the midfix position:
 		ArrayList<String> cs = new ArrayList<>();
-		build(ps, begin, end, p, x -> cs.add(x.toString()));
+		build(ps, begin, end, midfixend, x -> cs.add(x.toString()));
+		// Find a common postfix:
 		String postfix = findPostfix(cs);
-		// Check if we have an entry "PrefixPostfix":
-		boolean preandpostfixOnly = !postfix.isEmpty() && cs.remove(postfix);
-		// All remaining are char+postfix, and can thus be converted to a character range
+		// Check if we have an entry "<prefix><midfix><postfix>":
+		boolean innerGroupOptional = cs.remove(postfix);
+		// Special case: the remaining difference is a single character:
 		if (sameLength(cs, 1 + postfix.length())) {
 			assert (cs.size() > 0);
-			// Build character range (if more than one character:
+			// Build the inner group in tmp as: <midfix>[a-z]<?><postfix>
 			tmp.setLength(0);
-			if (cs.size() > 1) {
+			tmp.append(key, prefixend, midfixend); // Midfix
+			if (cs.size() == 1) {
+				// Single (optional) character:
+				tmp.append(cs.get(0).charAt(0));
+			} else {
+				// Build character range (if more than one character):
 				tmp.append('[');
 				for (int i = 0; i < cs.size(); i++) {
 					tmp.append(cs.get(i).charAt(0));
 				}
 				mergeCharRanges(tmp, 1); // Ignoring "["
 				tmp.append(']');
-			} else {
-				tmp.append(cs.get(0).charAt(0));
 			}
-			// Prefix:
+			if (innerGroupOptional) {
+				tmp.append('?'); // May be optional
+			}
+			tmp.append(postfix); // We simply add the postfix, too.
+			// tmp now is: <midfix>[a-z]<?><postfix>
+			// Basic pattern to build: <prefix>(<tmp>)?
 			buf.setLength(0);
-			buf.append(key, subbegin, p);
-			if (prefixOnly) {
-				if (!postfix.isEmpty()) {
-					// Will look like "pre(?:[a-z]?post)?"
-					buf.append("(?:").append(tmp);
-					if (preandpostfixOnly) {
-						buf.append('?');
-					}
-					buf.append(postfix).append(")?"); // prefixOnly
-				} else {
-					// Will look like "pre[a-z]?
-					buf.append(tmp).append('?'); // prefixOnly
-				}
+			buf.append(key, subbegin, prefixend); // Add prefix
+			// We only need the group for prefixOnly AND (midfix or postfix).
+			if (prefixOnly && (prefixend != midfixend || !postfix.isEmpty())) {
+				// Pattern: <prefix>(?:<mid><tmp?><postfix>)?
+				buf.append("(?:");
+				buf.append(tmp); // Char range
+				buf.append(")?"); // close prefixOnly=true group
 			} else {
-				// Will look like "pre[a-z]?post"
-				buf.append(tmp);
-				if (preandpostfixOnly) {
-					buf.append('?');
+				// Pattern: <prefix><[tmp]>?
+				buf.append(tmp); // Char range (cannot have a '?')
+				if (prefixOnly) {
+					assert (!innerGroupOptional);
+					buf.append('?'); // prefixOnly = true!
 				}
-				buf.append(postfix);
 			}
-			// System.err.println(buf);
+			LOG.trace("buildGroup sameLength case: {}", buf);
 			out.accept(buf);
 			return;
 		}
-		// Main case, build a group.
-		// prefix(?:(?:alt|ern|ati|ves)?postfix)?
+		// At this point, at least one case has length 2!
+		// We may need groups because:
+		// 1. prefixOnly == true
+		// 2. innerGroupOptional == true
+		// Pattern: <prefix>(?:<midfix>(?:<alt1>|<alt2>)<?><postfix>)<?>
+		// If midfix and postfix are empty, then we only need the inner group, even if prefixOnly
+		final boolean outerParentheses = prefixOnly && (midfixend != prefixend || !postfix.isEmpty());
 		buf.setLength(0);
-		buf.append(key, subbegin, p);
-		// Remember the current position (to undo "(?:" below)
-		final int oldpos = buf.length();
-		// We need double brackets if we have an optional non-empty postfix:
-		buf.append(prefixOnly && preandpostfixOnly ? "(?:(?:" : "(?:");
+		buf.append(key, subbegin, prefixend);
+		if (outerParentheses) {
+			buf.append("(?:");
+		}
+		buf.append(key, prefixend, midfixend);
+		buf.append("(?:"); // inner
 
 		// Merge subsequent alternatives with a common postfix except the first char into char ranges:
-		int alternatives = 0;
-		boolean cansimplify = false;
 		for (int i = 0; i < cs.size(); i++) {
 			String wi = cs.get(i);
 			if (wi == null) {
@@ -462,11 +503,10 @@ public class RegexpOptimizer {
 				}
 			}
 			// Separate alternatives
-			if (alternatives++ > 0) {
+			if (i > 0) {
 				buf.append('|');
 			}
 			if (tmp.length() > 1) {
-				cansimplify = (alternatives == 1); // If we have exactly one char-range.
 				mergeCharRanges(tmp, 0);
 				buf.append('[').append(tmp).append(']');
 				buf.append(wi, 1, wi.length() - postfix.length());
@@ -474,31 +514,20 @@ public class RegexpOptimizer {
 				buf.append(wi, 0, wi.length() - postfix.length());
 			}
 		}
-		if (cansimplify && alternatives == 1 && !preandpostfixOnly) {
-			// We want to simplify: pre(?:[a-z]mid)?post -> pre[a-z]?midpost
-			assert (buf.charAt(oldpos) == '(') : buf;
-			buf.delete(oldpos, oldpos + 3); // Remove one "(?:"
-			assert (buf.charAt(oldpos) == '[') : buf;
-			assert (buf.charAt(oldpos + tmp.length() + 1) == ']') : buf;
-			// At this point, our pattern looks like this:
-			// pre[0-9]mid
-			buf.append(postfix);
-			out.accept(buf);
-			return;
-		}
-		// At this point, our pattern looks like this:
-		if (preandpostfixOnly) {
-			// prefix(?:ab|cd or prefix(?:(?:ab|cd
-			buf.append(")?");
-		} else if (!prefixOnly) {
-			// non-optional case: a(?:b|c)d
-			buf.append(')');
+		buf.append(')'); // Close inner group.
+		if (innerGroupOptional) {
+			buf.append('?');
 		}
 		buf.append(postfix);
-		if (prefixOnly) {
-			// prefix(?:(?:ab|cd)[?]post)?
-			buf.append(")?");
+		if (outerParentheses) {
+			buf.append(')');
 		}
+		if (prefixOnly) {
+			assert(outerParentheses || !innerGroupOptional);
+			assert(buf.charAt(buf.length() - 1) == ')');
+			buf.append('?');
+		}
+		LOG.trace("buildGroup base case: {}", buf);
 		out.accept(buf);
 	}
 
@@ -645,19 +674,36 @@ public class RegexpOptimizer {
 	}
 
 	public static void main(String[] args) {
-		List<String> expanded = new ArrayList<>();
 		try {
-			String[] test = { "1(?:st|\\.)? Advent", "first Advent", //
-					"2(?:nd|\\.)? Advent", "second Advent", //
-					"3(?:rd|\\.)? Advent", "third Advent", //
-					"4(?:th|\\.)? Advent", "fourth Advent" };
+			String[] test = { //
+					  // "1(?:st|\\.)? Advent", "first Advent", //
+					  // "2(?:nd|\\.)? Advent", "second Advent", //
+					  // "3(?:rd|\\.)? Advent", "third Advent", //
+					  // "4(?:th|\\.)? Advent", "fourth Advent", //
+					  // "Christmas(?: [Ee]ve| [Dd]ay)?", "Calennig", //
+					  // "X-?(?:mas|MAS)", //
+					  // "[0-9][0-9]?[0-9]?[0-9]?", // produces duplicates!
+					// "[Ss]ix", "[Ss]ixty", "[Ss]ixteen", //
+					//"[Ss]ixty[ -]?(?:one|two|three|four|five|six|seven|eight|nine)", //
+					"1[0-9]", "1[0-9]th", //
+
+			};
+
+			ArrayList<String> expanded = new ArrayList<>();
 			for (String s : test) {
 				expandPatterns(s, x -> expanded.add(x.toString()));
 			}
-			for (String s : expanded) {
+			// Note: this may still contain duplicates!
+			Collections.sort(expanded, upperLowerChar);
+			for (String s : expanded.subList(0, Math.min(expanded.size(), 100))) {
 				System.out.println(s);
 			}
-			System.out.println(combinePatterns(expanded));
+			if (expanded.size() >= 100) {
+				System.out.println("... and " + (expanded.size() - 100) + " more.");
+			}
+			System.out.println("---> converted to --->");
+			String combined = combinePatterns(expanded);
+			System.out.println(combined);
 		} catch (OptimizerException e) {
 			LOG.error(e.getMessage(), e);
 		}
