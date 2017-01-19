@@ -146,8 +146,6 @@ public class RuleManager extends GenericResourceManager {
 					Pattern pattern = null;
 					try {
 						LOG.trace("Compiling pattern {}: {}", rule_name, rule_extraction);
-						if (rule_name.contains("date_r1a"))
-							LOG.warn("Compiling pattern {}: {}", rule_name, rule_extraction);
 						pattern = Pattern.compile(rule_extraction);
 					} catch (java.util.regex.PatternSyntaxException e) {
 						LOG.error("Compiling rules resulted in errors.", e);
