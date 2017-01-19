@@ -85,11 +85,11 @@ public class AbstractHeideltimeTest {
 		s.addToIndexes();
 		// Hard-coded tokenization:
 		for (Matcher m = WORDS.matcher(fragment).region(ss, se); m.find();) {
-			Token t = new Token(jcas);
 			for (int i = 1; i <= 3; i++) {
 				int start = m.start(i), end = m.end(i);
 				if (start == end)
 					continue;
+				Token t = new Token(jcas);
 				t.setBegin(start);
 				t.setEnd(end);
 				t.setPos("");
