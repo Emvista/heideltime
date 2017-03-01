@@ -424,9 +424,22 @@ public class RegexpOptimizer {
 		String postfix = findPostfix(cs);
 		// Check if we have an entry "<prefix><midfix><postfix>":
 		boolean innerGroupOptional = cs.remove(postfix);
+		if (cs.isEmpty()) {
+			assert (prefixOnly && innerGroupOptional);
+			// Simply <prefix>?
+			buf.setLength(0);
+			buf.append(key, subbegin, prefixend); // Add prefix
+			buf.append("(?:");
+			buf.append(key, prefixend, midfixend); // Midfix
+			assert (postfix.charAt(postfix.length() - 1) == '?'); // Must be optional
+			buf.append(postfix);
+			buf.append(")?"); // prefixOnly
+			LOG.trace("buildGroup degenerate case: {}", buf);
+			out.accept(buf);
+			return;
+		}
 		// Special case: the remaining difference is a single character:
 		if (sameLength(cs, 1 + postfix.length())) {
-			assert (cs.size() > 0);
 			// Build the inner group in tmp as: <midfix>[a-z]<?><postfix>
 			tmp.setLength(0);
 			tmp.append(key, prefixend, midfixend); // Midfix
@@ -525,8 +538,8 @@ public class RegexpOptimizer {
 			buf.append(')');
 		}
 		if (prefixOnly) {
-			assert(outerParentheses || !innerGroupOptional);
-			assert(buf.charAt(buf.length() - 1) == ')');
+			assert (outerParentheses || !innerGroupOptional);
+			assert (buf.charAt(buf.length() - 1) == ')');
 			buf.append('?');
 		}
 		LOG.trace("buildGroup base case: {}", buf);
@@ -685,10 +698,10 @@ public class RegexpOptimizer {
 					  // "Christmas(?: [Ee]ve| [Dd]ay)?", "Calennig", //
 					  // "X-?(?:mas|MAS)", //
 					  // "[0-9][0-9]?[0-9]?[0-9]?", // produces duplicates!
-					// "[Ss]ix", "[Ss]ixty", "[Ss]ixteen", //
-					//"[Ss]ixty[ -]?(?:one|two|three|four|five|six|seven|eight|nine)", //
-					"1[0-9]", "1[0-9]th", //
-
+					  // "[Ss]ix", "[Ss]ixty", "[Ss]ixteen", //
+					  // "[Ss]ixty[ -]?(?:one|two|three|four|five|six|seven|eight|nine)", //
+					  // "1[0-9]", "1[0-9]th", //
+					"[Hh]eilig(?:en?|) [Dd]rei König(?:en?|)", "[Hh]eilig(?:en|) Abend",//
 			};
 
 			ArrayList<String> expanded = new ArrayList<>();
