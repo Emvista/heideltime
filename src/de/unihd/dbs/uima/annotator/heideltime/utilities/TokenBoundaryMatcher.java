@@ -106,6 +106,21 @@ public class TokenBoundaryMatcher {
 				if (lastc == '.' || lastc == ',' || lastc == '/' || lastc == '-')
 					if (checkEnd(coveredText, lastp))
 						endpos.add(lastp);
+				// Stanford produces tokens like "2016/2017".
+				if (isDigit(first) && isDigit(lastc)) {
+					int left = begin + 1, right = lastp - 1;
+					while(left < right && isDigit(coveredText.charAt(left)))
+						++left;
+					while(left < right && isDigit(coveredText.charAt(right)))
+						--right;
+					if (left == right) {
+						char sep = coveredText.charAt(left);
+						if (sep == '/' || sep == '-' || sep == '.' || sep == ',') {
+							endpos.add(left);
+							startpos.add(left + 1);
+						}
+					}
+				}
 			}
 			if (checkEnd(coveredText, end))
 				endpos.add(end);
