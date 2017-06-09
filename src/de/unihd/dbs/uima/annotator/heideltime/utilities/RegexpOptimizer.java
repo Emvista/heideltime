@@ -508,7 +508,7 @@ public class RegexpOptimizer {
 			tmp.append(wi.charAt(0));
 			for (int j = i + 1; j < cs.size(); j++) {
 				String wj = cs.get(j);
-				if (wj == null) {
+				if (wj == null || wi.length() != wj.length()) {
 					continue;
 				}
 				char cj = wj.charAt(0);
@@ -701,7 +701,10 @@ public class RegexpOptimizer {
 					  // "[Ss]ix", "[Ss]ixty", "[Ss]ixteen", //
 					  // "[Ss]ixty[ -]?(?:one|two|three|four|five|six|seven|eight|nine)", //
 					  // "1[0-9]", "1[0-9]th", //
-					"[Hh]eilig(?:en?|) [Dd]rei König(?:en?|)", "[Hh]eilig(?:en|) Abend",//
+					//"[Hh]eilig(?:en?|) [Dd]rei König(?:en?|)", "[Hh]eilig(?:en|) Abend",//
+					"(?:[Aa](?:pril(?:is)?|ugusti?)|[Dd]e(?:cemb(?:er|r(?:\\.|is)?)|zember)|[Ff]ebruar(?:ii|y)?|[Hh]ornung|[Jj](?:anuar(?:ii|y)?|u(?:[ln](?:ii?|y))|änner)|[Mm](?:a(?:erz|ii?|r(?:ch|t(?:ii)?)|y)|[eä]rz)|[Nn]ovemb(?:er|r(?:\\.|is)?)|[Oo](?:ctob(?:er|r(?:\\.|is)?)|ktober)|[Ss]eptemb(?:er|r(?:\\.|is)?))", //
+					"(?:[Aa](?:pr(?:\\.)?|ug(?:\\.)?)|[Dd]e(?:[cz](?:\\.)?)|[Ff]eb(?:\\.)?|[Jj](?:an(?:\\.)?|u(?:[ln](?:\\.)?))|[Mm](?:a(?:[iry])|är(?:\\.)?)|[Nn]ov(?:\\.)?|[Oo][ck]t(?:\\.)?|[Ss]ep(?:\\.|t(?:\\.)?)?)", //
+					"(?:0[1-9]|1[0-2]?|[2-9])", //
 			};
 
 			ArrayList<String> expanded = new ArrayList<>();
