@@ -31,7 +31,7 @@ public class ParseInteger {
 		int digit;
 
 		int i = b;
-		char firstChar = s.charAt(0);
+		char firstChar = s.charAt(i);
 		if (firstChar < '0') { // Possible leading "+" or "-"
 			if (firstChar == '-') {
 				negative = true;
