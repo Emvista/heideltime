@@ -17,7 +17,7 @@
 // EXAMPLE r1e-1: 12/29/2000 20:29:29.79
 RULENAME="time_r1a",EXTRACTION="%reYear4Digit-%reMonthNumber-%reDayNumber[T ]%reTimeHour:%reTimeMinute:%reTimeMinute",NORM_VALUE="group(1)-group(2)-group(3)Tgroup(4):group(5):group(6)"
 RULENAME="time_r1b",EXTRACTION="%reYear4Digit-%reMonthNumber-%reDayNumber[T ]%reTimeHour:%reTimeMinute",NORM_VALUE="group(1)-group(2)-group(3)Tgroup(4):group(5)"
-RULENAME="time_r1c",EXTRACTION="%reMonthNumber/%reDayNumber/%reYear4Digit %reTimeHour:%reTimeMinute",NORM_VALUE="group(3)-group(1)-group(2)Tgroup(4):group(6)"
+RULENAME="time_r1c",EXTRACTION="%reMonthNumber/%reDayNumber/%reYear4Digit %reTimeHour:%reTimeMinute",NORM_VALUE="group(3)-group(1)-group(2)Tgroup(4):group(5)"
 RULENAME="time_r1d",EXTRACTION="%reMonthNumber/%reDayNumber/%reYear4Digit %reTimeHour:%reTimeMinute:%reTimeMinute",NORM_VALUE="group(3)-group(1)-group(2)Tgroup(4):group(5):group(6)"
 RULENAME="time_r1e",EXTRACTION="%reMonthNumber/%reDayNumber/%reYear4Digit %reTimeHour:%reTimeMinute:%reTimeMinute\.(\d\d)",NORM_VALUE="group(3)-group(1)-group(2)Tgroup(4):group(5):group(6).group(7)"
 
