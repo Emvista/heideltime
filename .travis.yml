@@ -8,6 +8,8 @@ script:
 - mvn package
 deploy:
   provider: bintray
+  edge:
+    branch: bintray-unauth
   file: "./bintray-upload-desc.json"
   on: merged-prs
   user: longliveenduro
