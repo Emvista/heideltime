@@ -24,8 +24,8 @@
     "files":
         [
             {
-                "includePattern": ".*/(.*standalone\\.jar)",
-                "uploadPattern": "$1",
+                "includePattern": "(.*)/(.*standalone\\.jar)",
+                "uploadPattern": "$2",
                 "matrixParams": {"override": 1}
             }
         ],
