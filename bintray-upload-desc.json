@@ -24,7 +24,7 @@
     "files":
         [
             {
-                "includePattern": "heideltime.jar",
+                "includePattern": "pom.xml",
                 "uploadPattern": "heideltime.jar",
                 "matrixParams": {"override": 1}
             }
