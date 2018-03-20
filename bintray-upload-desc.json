@@ -25,7 +25,7 @@
         [
             {
                 "includePattern": "heideltime.jar",
-                "uploadPattern": "com/github/heideltime/2.2.2/heideltime.jar",
+                "uploadPattern": "heideltime.jar",
                 "matrixParams": {"override": 1}
             }
         ],
