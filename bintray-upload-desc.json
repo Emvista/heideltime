@@ -24,8 +24,8 @@
     "files":
         [
             {
-                "includePattern": "target/(.*)",
-                "uploadPattern": "com/github/heideltime/2.2.2-merged-prs/$1",
+                "includePattern": ".*/(.*standalone\\.jar)",
+                "uploadPattern": "$1",
                 "matrixParams": {"override": 1}
             }
         ],
