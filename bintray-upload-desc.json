@@ -24,7 +24,7 @@
     "files":
         [
             {
-                "includePattern": "target\/de.unihd.dbs.heideltime.standalone.jar",
+                "includePattern": "target\/de\.unihd\.dbs\.heideltime\.standalone\.jar",
                 "uploadPattern": "heideltime.jar",
                 "matrixParams": {"override": 1}
             }
