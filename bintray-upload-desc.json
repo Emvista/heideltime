@@ -24,7 +24,7 @@
     "files":
         [
             {
-                "includePattern": "target/de\.unihd\.dbs\.heideltime\.standalone(.*\\.jar)",
+                "includePattern": "target/de(.*\\.jar)",
                 "excludePattern": ".*/do-not-deploy/.*",
                 "uploadPattern": "com/github/heideltime/2.2.2-merged-prs/heideltime-2.2.2-merged-prs.jar",
                 "matrixParams": {"override": 1}
