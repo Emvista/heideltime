@@ -24,8 +24,8 @@
     "files":
         [
             {
-                "includePattern": "pom.xml",
-                "uploadPattern": "heideltime.jar",
+                "includePattern": "target/heideltime-2.2.2-merged-prs.jar",
+                "uploadPattern": "heideltime-2.2.2-merged-prs.jar",
                 "matrixParams": {"override": 1}
             }
         ],

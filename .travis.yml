@@ -6,8 +6,8 @@ jdk:
 - oraclejdk8
 script:
 - mvn package
-before_deploy: "mv target/heideltime.jar ."
 deploy:
+  skip_cleanup: true
   provider: bintray
   edge:
     branch: bintray-unauth
