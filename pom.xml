@@ -68,7 +68,7 @@
 				</includes>
 			</resource>
 		</resources>
-		<finalName>de.unihd.dbs.heideltime.standalone</finalName>
+		<finalName>heideltime</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
