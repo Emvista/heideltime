@@ -14,10 +14,10 @@
     },
 
     "version": {
-        "name": "2.2.2-SNAPSHOT",
+        "name": "2.2.2-merged-prs",
         "desc": "Heideltime with some merged PRs",
         "released": "2018-03-20",
-        "vcs_tag": "2.2.2-SNAPSHOT",
+        "vcs_tag": "2.2.2-merged-prs",
         "gpgSign": false
     },
 
