@@ -25,12 +25,12 @@
         [
             {
                 "includePattern": "target/heideltime-2.2.2.jar",
-                "uploadPattern": "com/github/heideltime/2.2.2/heideltime-2.2.2.jar",
+                "uploadPattern": "com/github/heideltime/heideltime/2.2.2/heideltime-2.2.2.jar",
                 "matrixParams": {"override": 1}
             },
             {
                 "includePattern": "pom.xml",
-                "uploadPattern": "com/github/heideltime/2.2.2/heideltime-2.2.2.pom",
+                "uploadPattern": "com/github/heideltime/heideltime/2.2.2/heideltime-2.2.2.pom",
                 "matrixParams": {"override": 1}
             },
             {
