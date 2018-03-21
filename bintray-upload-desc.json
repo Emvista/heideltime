@@ -27,6 +27,11 @@
                 "includePattern": "target/heideltime-2.2.2-merged-prs.jar",
                 "uploadPattern": "com/github/heideltime/2.2.2-merged-prs/heideltime-2.2.2-merged-prs.jar",
                 "matrixParams": {"override": 1}
+            },
+            {
+                "includePattern": "target/treetagger-3.2.tar.gz",
+                "uploadPattern": "treetagger-3.2.tar.gz",
+                "matrixParams": {"override": 1}
             }
         ],
     "publish": true
