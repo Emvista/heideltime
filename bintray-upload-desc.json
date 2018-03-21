@@ -30,7 +30,7 @@
             },
             {
                 "includePattern": "pom.xml",
-                "uploadPattern": "com/github/heideltime/heideltime/2.2.2/heideltime-2.2.2-mergedprs.pom",
+                "uploadPattern": "com/github/heideltime/heideltime/2.2.2-mergedprs/heideltime-2.2.2-mergedprs.pom",
                 "matrixParams": {"override": 1}
             },
             {
