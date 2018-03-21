@@ -21,6 +21,7 @@ before_deploy:
 - mv german-par-linux-3.2-utf8.bin german.par
 - cd ../..
 - tar -czvf treetagger-3.2.tar.gz treetagger-3.2
+- cd ..
 deploy:
   skip_cleanup: true
   provider: bintray
