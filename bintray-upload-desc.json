@@ -29,6 +29,11 @@
                 "matrixParams": {"override": 1}
             },
             {
+                "includePattern": "pom.xml",
+                "uploadPattern": "com/github/heideltime/2.2.2-merged-prs/heideltime-2.2.2-merged-prs.pom",
+                "matrixParams": {"override": 1}
+            },
+            {
                 "includePattern": "target/treetagger-3.2.tar.gz",
                 "uploadPattern": "treetagger-3.2.tar.gz",
                 "matrixParams": {"override": 1}
