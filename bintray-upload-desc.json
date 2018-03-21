@@ -14,23 +14,23 @@
     },
 
     "version": {
-        "name": "2.2.2",
+        "name": "2.2.2-mergedprs",
         "desc": "Heideltime with some merged PRs",
         "released": "2018-03-20",
-        "vcs_tag": "2.2.2",
+        "vcs_tag": "2.2.2-mergedprs",
         "gpgSign": false
     },
 
     "files":
         [
             {
-                "includePattern": "target/heideltime-2.2.2.jar",
-                "uploadPattern": "com/github/heideltime/heideltime/2.2.2/heideltime-2.2.2.jar",
+                "includePattern": "target/heideltime-2.2.2-mergedprs.jar",
+                "uploadPattern": "com/github/heideltime/heideltime/2.2.2-mergedprs/heideltime-2.2.2-mergedprs.jar",
                 "matrixParams": {"override": 1}
             },
             {
                 "includePattern": "pom.xml",
-                "uploadPattern": "com/github/heideltime/heideltime/2.2.2/heideltime-2.2.2.pom",
+                "uploadPattern": "com/github/heideltime/heideltime/2.2.2/heideltime-2.2.2-mergedprs.pom",
                 "matrixParams": {"override": 1}
             },
             {
