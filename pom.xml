@@ -227,11 +227,13 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.25</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
 			<version>1.7.25</version>
+			<scope>provided</scope>
 		</dependency>
 		<!--&lt;!&ndash; Default logging - you can mask these &ndash;&gt;-->
 		<!--<dependency>-->

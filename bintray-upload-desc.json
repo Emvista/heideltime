@@ -25,7 +25,7 @@
         [
             {
                 "includePattern": "target/heideltime-2.2.2-merged-prs.jar",
-                "uploadPattern": "heideltime-2.2.2-merged-prs.jar",
+                "uploadPattern": "com/github/heideltime/2.2.2-merged-prs/heideltime-2.2.2-merged-prs.jar",
                 "matrixParams": {"override": 1}
             }
         ],
