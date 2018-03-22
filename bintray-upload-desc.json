@@ -1,0 +1,43 @@
+{
+    "package": {
+        "name": "heideltime",
+        "repo": "mvn",
+        "subject": "longliveenduro",
+        "desc": "heideltime with some merged PRs",
+        "website_url": "https://github.com/longliveenduro/heideltime",
+        "issue_tracker_url": "https://github.com/HeidelTime/heideltime/issues",
+        "vcs_url": "git@github.com:longliveenduro/heideltime.git",
+        "github_use_tag_release_notes": false,
+        "licenses": ["GPL-3.0"],
+        "public_download_numbers": false,
+        "public_stats": false
+    },
+
+    "version": {
+        "name": "2.2.2-SNAP",
+        "desc": "Heideltime with some merged PRs",
+        "released": "2018-03-20",
+        "vcs_tag": "2.2.2-SNAP",
+        "gpgSign": false
+    },
+
+    "files":
+        [
+            {
+                "includePattern": "target/heideltime-2.2.2-SNAP.jar",
+                "uploadPattern": "com/github/heideltime/heideltime/2.2.2-SNAP/heideltime-2.2.2-SNAP.jar",
+                "matrixParams": {"override": 1}
+            },
+            {
+                "includePattern": "pom.xml",
+                "uploadPattern": "com/github/heideltime/heideltime/2.2.2-SNAP/heideltime-2.2.2-SNAP.pom",
+                "matrixParams": {"override": 1}
+            },
+            {
+                "includePattern": "target/treetagger-3.2.tar.gz",
+                "uploadPattern": "treetagger-3.2.tar.gz",
+                "matrixParams": {"override": 1}
+            }
+        ],
+    "publish": true
+}

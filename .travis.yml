@@ -1,0 +1,34 @@
+language: java
+cache:
+  directories:
+  - "$HOME/.m2/repository"
+jdk:
+- oraclejdk8
+script:
+- mvn package
+before_deploy:
+- mkdir target/treetagger-3.2
+- cd target/treetagger-3.2
+- wget http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/tagger-scripts.tar.gz
+- tar xvf tagger-scripts.tar.gz
+- rm tagger-scripts.tar.gz
+- wget http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/tree-tagger-linux-3.2.1.tar.gz
+- tar xvf tree-tagger-linux-3.2.1.tar.gz
+- rm tree-tagger-linux-3.2.1.tar.gz
+- cd lib
+- wget http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/data/german-par-linux-3.2-utf8.bin.gz
+- gunzip german-par-linux-3.2-utf8.bin.gz
+- mv german-par-linux-3.2-utf8.bin german.par
+- cd ../..
+- tar -czvf treetagger-3.2.tar.gz treetagger-3.2
+- cd ..
+deploy:
+  skip_cleanup: true
+  provider: bintray
+  edge:
+    branch: bintray-unauth
+  file: "./bintray-upload-desc.json"
+  on: master
+  user: longliveenduro
+  key:
+    secure: nW6rk3kgEVCoujiMaeptj8lRDOxAB2gh2KwBLwaSf7Ggx4j2fJCWKCTrZ3hE6MQzJepbpE3IaSz3CckATregi0/YgtReXbNrohpNAip+vfN8KS+AEIRBZkYmMNSkHEvdRRWIAENpivRjiZ+Kvo+8GJA0xPvYNXGz5JBPOjzCaQwYqGW5in18EP+x8otaZNmTiGkzKrVPkpSu2xHj/aLAiDJ/zcFR4rLZLGQXaR4EIyZmXrPkOsu/5P5KkPeiRJ7JJy64J7taXqBcfnyx+12PrGQuKnqSSzNJeKyfLK6xSxPpapw5V1qkT8Tj4sESclsYa2qwF7ESWg0kuMirb2KdWIvCAc430UIBB4xgCIEMx+lDTvE+/X5PFNq6qwOpZDic5KFXuyTBaIsIhfW1367pa2rcSAlKDTBW9xVWtXO2h62mjCGsxovR5ZHYpNiDkTg2M6tDzJPjSnV8X4+MoVy4smITehHDZOwR44E3FSORHHmCbUfqPP7ga/uzOvDcDaAGWXU2NMjUAMgGFiBoCDfYQIit19Vjmvy4592xae3jj9DA7dIxWUrlbM7jZ92jhwiOZKE7AlAgLmF05z51FCw5/sIRJD3FbFPPLoNhHTCIB/yGSUmqjbgClGSulBpyoeSErxxN0wjxlTilxLRwCY4MrmmMFh2KjL66hXNjP+JdZuM=
