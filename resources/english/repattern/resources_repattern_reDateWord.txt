@@ -13,8 +13,10 @@
 [Rr]ight now
 [Nn]ow
 [Aa]s soon as possible
-[Rr]ecent(?:ly)?
-[Cc]urrent(?:ly)?
+[Rr]ecently
+[Rr]ecent
+[Cc]urrently
+[Cc]urrent
 // [Ss]oon
 // [Pp]reviously
 // [Yy]et

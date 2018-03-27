@@ -23,17 +23,15 @@ import org.apache.uima.collection.CasConsumer_ImplBase;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceProcessException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import de.unihd.dbs.uima.annotator.heideltime.utilities.Logger;
 import de.unihd.dbs.uima.types.heideltime.Dct;
 import de.unihd.dbs.uima.types.heideltime.Timex3;
 
 public class TempEval3Writer extends CasConsumer_ImplBase {
-	/** Class logger */
-	private static final Logger LOG = LoggerFactory.getLogger(TempEval3Writer.class);
+	private Class<?> component = this.getClass();
 
 	private static final String PARAM_OUTPUTDIR = "OutputDir";
 	
@@ -47,13 +45,13 @@ public class TempEval3Writer extends CasConsumer_ImplBase {
 		
 		if (!mOutputDir.exists()) {
 			if(!mOutputDir.mkdirs()) {
-				LOG.error("Couldn't create non-existant folder "+mOutputDir.getAbsolutePath());
+				Logger.printError(component, "Couldn't create non-existant folder "+mOutputDir.getAbsolutePath());
 				throw new ResourceInitializationException();
 			}
 		}
 		
 		if(!mOutputDir.canWrite()) {
-			LOG.error("Folder "+mOutputDir.getAbsolutePath()+" is not writable.");
+			Logger.printError(component, "Folder "+mOutputDir.getAbsolutePath()+" is not writable.");
 			throw new ResourceInitializationException();
 		}
 	}
@@ -101,7 +99,8 @@ public class TempEval3Writer extends CasConsumer_ImplBase {
 			db = dbf.newDocumentBuilder();
 			doc = db.newDocument();
 		} catch (ParserConfigurationException e) {
-			LOG.error("XML Builder could not be instantiated", e);
+			e.printStackTrace();
+			Logger.printError(component, "XML Builder could not be instantiated");
 		}
 		
 		// create the TimeML root element
@@ -167,7 +166,7 @@ public class TempEval3Writer extends CasConsumer_ImplBase {
 						prevT = thisT; // this iteration's prevT was removed; setting for new iteration 
 					}
 					
-					LOG.error("Two overlapping Timexes have been discovered:" + System.getProperty("line.separator")
+					Logger.printError(component, "Two overlapping Timexes have been discovered:" + System.getProperty("line.separator")
 							+ "Timex A: " + prevT.getCoveredText() + " [\"" + prevT.getTimexValue() + "\" / " + prevT.getBegin() + ":" + prevT.getEnd() + "]" 
 							+ System.getProperty("line.separator")
 							+ "Timex B: " + removedT.getCoveredText() + " [\"" + removedT.getTimexValue() + "\" / " + removedT.getBegin() + ":" + removedT.getEnd() + "]" 
@@ -254,14 +253,17 @@ public class TempEval3Writer extends CasConsumer_ImplBase {
 			// transform
 			transformer.transform(source, result);
 		} catch (IOException e) { // something went wrong with the bufferedwriter
-			LOG.error("File "+outFile.getAbsolutePath()+" could not be written.", e);
+			e.printStackTrace();
+			Logger.printError(component, "File "+outFile.getAbsolutePath()+" could not be written.");
 		} catch (TransformerException e) { // the transformer malfunctioned (call optimus prime)
-			LOG.error("XML transformer could not be properly initialized.", e);
+			e.printStackTrace();
+			Logger.printError(component, "XML transformer could not be properly initialized.");
 		} finally { // clean up for the bufferedwriter
 			try {
 				bw.close();
 			} catch(IOException e) {
-				LOG.error("File "+outFile.getAbsolutePath()+" could not be closed.", e);
+				e.printStackTrace();
+				Logger.printError(component, "File "+outFile.getAbsolutePath()+" could not be closed.");
 			}
 		}
 	}

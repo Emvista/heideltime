@@ -3,12 +3,10 @@
 // date:   2011-06-10
 // This file contains regular expression patterns for weekdays.
 // FORMAT: one line is one disjunction of the pattern
-// 2016-01-10 Allow some spelling mistakes of Wednesday -- Erich
-// 2016-01-13 Folded patterns by first letter for performance -- Erich
 [Mm]onday
 [Tt]uesday
-// Allow spelling errors:
-[Ww]e[dn][dn]e?sday
+[Ww]ednesday
 [Tt]hursday
 [Ff]riday
-[Ss](?:aturday|unday)
+[Ss]aturday
+[Ss]unday

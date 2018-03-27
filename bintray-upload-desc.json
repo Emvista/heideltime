@@ -14,23 +14,23 @@
     },
 
     "version": {
-        "name": "2.2.2-kno10_perf",
+        "name": "2.2.2-SNAP",
         "desc": "Heideltime with some merged PRs",
         "released": "2018-03-20",
-        "vcs_tag": "2.2.2-kno10_perf",
+        "vcs_tag": "2.2.2-SNAP",
         "gpgSign": false
     },
 
     "files":
         [
             {
-                "includePattern": "target/heideltime-2.2.2-kno10_perf.jar",
-                "uploadPattern": "com/github/heideltime/heideltime/2.2.2-kno10_perf/heideltime-2.2.2-kno10_perf.jar",
+                "includePattern": "target/heideltime-2.2.2-SNAP.jar",
+                "uploadPattern": "com/github/heideltime/heideltime/2.2.2-SNAP/heideltime-2.2.2-SNAP.jar",
                 "matrixParams": {"override": 1}
             },
             {
                 "includePattern": "pom.xml",
-                "uploadPattern": "com/github/heideltime/heideltime/2.2.2-kno10_perf/heideltime-2.2.2-kno10_perf.pom",
+                "uploadPattern": "com/github/heideltime/heideltime/2.2.2-SNAP/heideltime-2.2.2-SNAP.pom",
                 "matrixParams": {"override": 1}
             },
             {

@@ -1,5 +1,5 @@
 /*
- * DocumentCreationTimeMissingException.java
+ * DocumentType.java
  *
  * Copyright (c) 2011, Database Research Group, Institute of Computer Science, University of Heidelberg.
  * All rights reserved. This program and the accompanying materials
@@ -10,23 +10,35 @@
  *
  * HeidelTime is a multilingual, cross-domain temporal tagger.
  * For details, see http://dbs.ifi.uni-heidelberg.de/heideltime
- */ 
+ */
 
-package de.unihd.dbs.heideltime.standalone.exceptions;
-
-import de.unihd.dbs.heideltime.standalone.DocumentType;
+package de.unihd.dbs.heideltime.standalone;
 
 /**
- * Exception thrown if document creation time is missing while processing a document of type {@link DocumentType#NEWS}
+ * Type of document to be processed by HeidelTime
  * 
  * @author Andreas Fay, University of Heidelberg
  * @version 1.0
  */
-public class DocumentCreationTimeMissingException extends Exception {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -157033697488394828L;
-
+public enum DocumentType {
+	NARRATIVES {
+		public String toString() {
+			return "narratives";
+		}
+	},
+	NEWS {
+		public String toString() {
+			return "news";
+		}
+	},
+	COLLOQUIAL {
+		public String toString() {
+			return "colloquial";
+		}
+	},
+	SCIENTIFIC {
+		public String toString() {
+			return "scientific";
+		}
+	}
 }

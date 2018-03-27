@@ -4,11 +4,7 @@
 // This file contains "BCyears" and their normalized expressions.
 // For example, the normalized value of "BC" is "BC"
 // FORMAT: "yearPrefix","normalized-yearPrefix"
-"BC","BC"
-"AD",""
-"B\.C\.","BC"
-"A\.D\.",""
+"B[\.]?C[\.]?","BC"
+"A[\.]?D[\.]?",""
 "BCE","BC"
 "CE",""
-"B\.C\.E\.","BC"
-"C\.E\.",""
