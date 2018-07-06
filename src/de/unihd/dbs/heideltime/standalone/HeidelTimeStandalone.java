@@ -495,7 +495,7 @@ public class HeidelTimeStandalone {
 	 */
 	public String process(String document, Date documentCreationTime, ResultFormatter resultFormatter)
 			throws DocumentCreationTimeMissingException {
-		logger.log(Level.INFO, "Processing started");
+		logger.log(Level.FINE, "Processing started");
 
 		// Generate jcas object ----------
 		logger.log(Level.FINE, "Generate CAS object");
@@ -518,7 +518,7 @@ public class HeidelTimeStandalone {
 
 			heidelTime.process(jcas);
 
-			logger.log(Level.INFO, "Processing finished");
+			logger.log(Level.FINE, "Processing finished");
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.log(Level.WARNING, "Processing aborted due to errors");
@@ -534,7 +534,7 @@ public class HeidelTimeStandalone {
 		String result = null;
 		try {
 			result = resultFormatter.format(jcas);
-			logger.log(Level.INFO, "Result formatted");
+			logger.log(Level.FINE, "Result formatted");
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.log(Level.WARNING, "Result could not be formatted");

@@ -45,12 +45,8 @@ public class ResourceScanner {
 	private Map<String, ResourceMap> rules = new HashMap<String, ResourceMap>();
 
 	private ResourceScanner() {
-		String jarFilePath = null;
-		try {
-			jarFilePath = this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
+		String jarFilePath = "."+File.separator+"heideltime";//this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+		
 		if (jarFilePath != null) {
 			File jarFile = new File(jarFilePath);
 			if (jarFile.isFile()) {
